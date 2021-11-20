@@ -41,6 +41,11 @@ public class UDPSocketModuleConnection
     }
 
     @Override
+    public void removeAllPackets() {
+        getModule().getPacketBuffer().clear();
+    }
+
+    @Override
     public void send(Packet packet) throws IOException {
         getModule().getSocket().send(packet.asDatagramPacket());
     }
