@@ -36,8 +36,8 @@ public class UDPSocketModuleConnection
 
     @Override
     @Nullable
-    public void getNextPacket() {
-        getModule().getPacketBuffer().poll();
+    public Packet getNextPacket() {
+        return getModule().getPacketBuffer().poll();
     }
 
     @Override
