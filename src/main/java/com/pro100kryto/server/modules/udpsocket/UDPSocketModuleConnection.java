@@ -42,7 +42,9 @@ public class UDPSocketModuleConnection
 
     @Override
     public void removeAllPackets() {
-        getModule().getPacketBuffer().clear();
+        while (hasNextPacket()){
+            getNextPacket().recycle();
+        }
     }
 
     @Override
