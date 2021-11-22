@@ -15,9 +15,9 @@ import com.pro100kryto.server.tick.AModuleTickRunnable;
 import com.pro100kryto.server.tick.ITick;
 import com.pro100kryto.server.tick.ITickGroup;
 import com.pro100kryto.server.tick.Ticks;
-import com.pro100kryto.server.utils.datagram.packets.EndPoint;
-import com.pro100kryto.server.utils.datagram.packets.Packet;
-import com.pro100kryto.server.utils.datagram.packets.PacketStatus;
+import com.pro100kryto.server.utils.datagram.packet.EndPoint;
+import com.pro100kryto.server.utils.datagram.packet.Packet;
+import com.pro100kryto.server.utils.datagram.packet.PacketStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.DatagramPacket;
@@ -101,7 +101,6 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
                 @Override
                 public void tick(long dtms) throws Throwable {
                     final Packet packet = packetPoolModuleConnection.getModuleConnection().getNextPacket();
-                    if (packet == null) return;
 
                     final DatagramPacket datagramPacket = packet.asDatagramPacket();
                     socket.receive(datagramPacket);

@@ -4,7 +4,7 @@ import com.pro100kryto.server.logger.ILogger;
 import com.pro100kryto.server.module.AModuleConnection;
 import com.pro100kryto.server.modules.udpsocket.connection.ISocketListener;
 import com.pro100kryto.server.modules.udpsocket.connection.IUDPSocketModuleConnection;
-import com.pro100kryto.server.utils.datagram.packets.Packet;
+import com.pro100kryto.server.utils.datagram.packet.Packet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +41,7 @@ public class UDPSocketModuleConnection
     }
 
     @Override
-    public void removeAllPackets() {
+    public void recycleAllPackets() {
         while (hasNextPacket()){
             getNextPacket().recycle();
         }
