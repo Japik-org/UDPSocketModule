@@ -76,8 +76,9 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
             );
 
             socket = new DatagramSocket(
-                    settings.getInt("socket-port")
+                    settings.getIntOrDefault("socket-port", 0)
             );
+            logger.info("Socket port is "+socket.getLocalPort());
 
             packetBuffer = new ArrayBlockingQueue<>(
                     settings.getIntOrDefault("buffer-size", 64)
@@ -123,7 +124,6 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
                 }
             });
             tick.init();
-            tick.activate();
         }
 
         @Override
@@ -132,12 +132,14 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
                 throw new IllegalStateException("Socket is closed");
             }
 
+            tick.activate();
             tickGroup.getLiveCycle().start();
         }
 
         @Override
         public void stopForce() {
             tickGroup.getLiveCycle().stopForce();
+            tick.inactivate();
         }
 
         @Override
