@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -92,7 +93,7 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
                              socket.setSoTimeout(val);
                         }
                     },
-                    3000
+                    5000
             ));
 
             tickGroup = Ticks.newTickGroupPreMod(settings);
@@ -104,7 +105,12 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
                     final Packet packet = packetPoolModuleConnection.getModuleConnection().getNextPacket();
 
                     final DatagramPacket datagramPacket = packet.asDatagramPacket();
-                    socket.receive(datagramPacket);
+                    try {
+                        socket.receive(datagramPacket);
+                    } catch (SocketTimeoutException socketTimeoutException){
+                        logger.info("SocketTimeoutException : "+socketTimeoutException.getMessage());
+                        return;
+                    }
                     packet.setEndPoint(new EndPoint(datagramPacket.getAddress(), datagramPacket.getPort()));
                     packet.setPacketStatus(PacketStatus.Received);
 
