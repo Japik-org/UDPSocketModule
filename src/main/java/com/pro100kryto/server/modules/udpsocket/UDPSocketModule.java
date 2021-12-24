@@ -104,28 +104,27 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
                 public void tick(long dtms) throws Throwable {
                     final Packet packet = packetPoolModuleConnection.getModuleConnection().getNextPacket();
 
-                    final DatagramPacket datagramPacket = packet.asDatagramPacket();
                     try {
-                        socket.receive(datagramPacket);
-                    } catch (SocketTimeoutException socketTimeoutException){
-                        logger.info("SocketTimeoutException : "+socketTimeoutException.getMessage());
-                        return;
-                    }
-                    packet.setEndPoint(new EndPoint(datagramPacket.getAddress(), datagramPacket.getPort()));
-                    packet.setPacketStatus(PacketStatus.Received);
+                        final DatagramPacket datagramPacket = packet.asDatagramPacket();
+                        try {
+                            socket.receive(datagramPacket);
+                        } catch (SocketTimeoutException socketTimeoutException) {
+                            logger.info("SocketTimeoutException : " + socketTimeoutException.getMessage());
+                            return;
+                        }
+                        packet.setEndPoint(new EndPoint(datagramPacket.getAddress(), datagramPacket.getPort()));
+                        packet.setPacketStatus(PacketStatus.Received);
 
-                    try{
-                        if (listener != null){
+                        if (listener != null) {
                             listener.process(packet);
                         } else {
                             if (!packetBuffer.offer(packet)) {
                                 logger.warn("packetBuffer is full");
-                                packet.recycle();
                             }
                         }
-                    } catch (Throwable throwable){
+
+                    } finally {
                         packet.recycle();
-                        logger.exception(throwable);
                     }
                 }
             });
