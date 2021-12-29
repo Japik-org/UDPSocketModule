@@ -106,12 +106,7 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
 
                     try {
                         final DatagramPacket datagramPacket = packet.asDatagramPacket();
-                        try {
-                            socket.receive(datagramPacket);
-                        } catch (SocketTimeoutException socketTimeoutException) {
-                            logger.info("SocketTimeoutException : " + socketTimeoutException.getMessage());
-                            return;
-                        }
+                        socket.receive(datagramPacket);
                         packet.setEndPoint(new EndPoint(datagramPacket.getAddress(), datagramPacket.getPort()));
                         packet.setPacketStatus(PacketStatus.Received);
 
@@ -123,8 +118,13 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
                             }
                         }
 
-                    } finally {
+                    } catch (SocketTimeoutException socketTimeoutException) {
+                        logger.info("SocketTimeoutException : " + socketTimeoutException.getMessage());
                         packet.recycle();
+
+                    } catch (Exception e) {
+                        packet.recycle();
+                        throw e;
                     }
                 }
             });
