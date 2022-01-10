@@ -4,7 +4,7 @@ import com.pro100kryto.server.logger.ILogger;
 import com.pro100kryto.server.module.AModuleConnection;
 import com.pro100kryto.server.modules.udpsocket.connection.ISocketListener;
 import com.pro100kryto.server.modules.udpsocket.connection.IUDPSocketModuleConnection;
-import com.pro100kryto.server.utils.datagram.packet.Packet;
+import com.pro100kryto.server.utils.datagram.packet.DatagramPacketWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +36,7 @@ public class UDPSocketModuleConnection
 
     @Override
     @Nullable
-    public Packet getNextPacket() {
+    public DatagramPacketWrapper getNextPacket() {
         return getModule().getPacketBuffer().poll();
     }
 
@@ -48,13 +48,13 @@ public class UDPSocketModuleConnection
     }
 
     @Override
-    public void send(Packet packet) throws IOException {
-        getModule().getSocket().send(packet.asDatagramPacket());
+    public void send(DatagramPacketWrapper packet) throws IOException {
+        getModule().getSocket().send(packet.getDatagramPacket());
     }
 
     @Override
-    public void sendAndRecycle(Packet packet) throws IOException {
-        getModule().getSocket().send(packet.asDatagramPacket());
+    public void sendAndRecycle(DatagramPacketWrapper packet) throws IOException {
+        getModule().getSocket().send(packet.getDatagramPacket());
         packet.recycle();
     }
 }
