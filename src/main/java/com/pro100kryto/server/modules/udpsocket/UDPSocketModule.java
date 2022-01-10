@@ -15,9 +15,7 @@ import com.pro100kryto.server.tick.AModuleTickRunnable;
 import com.pro100kryto.server.tick.ITick;
 import com.pro100kryto.server.tick.ITickGroup;
 import com.pro100kryto.server.tick.Ticks;
-import com.pro100kryto.server.utils.datagram.packet.EndPoint;
-import com.pro100kryto.server.utils.datagram.packet.Packet;
-import com.pro100kryto.server.utils.datagram.packet.PacketStatus;
+import com.pro100kryto.server.utils.datagram.packet.DatagramPacketWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.DatagramPacket;
@@ -29,7 +27,7 @@ import java.util.concurrent.BlockingQueue;
 public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
     private IModuleConnectionSafe<IPacketPoolModuleConnection> packetPoolModuleConnection;
 
-    private BlockingQueue<Packet> packetBuffer;
+    private BlockingQueue<DatagramPacketWrapper> packetBuffer;
 
     private DatagramSocket socket;
     private ITickGroup tickGroup;
@@ -55,7 +53,7 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
         this.listener = listener;
     }
 
-    public BlockingQueue<Packet> getPacketBuffer() {
+    public BlockingQueue<DatagramPacketWrapper> getPacketBuffer() {
         return packetBuffer;
     }
 
@@ -102,18 +100,10 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
             tick = tickGroup.createTick(new AModuleTickRunnable<UDPSocketModule>(module, logger) {
                 @Override
                 public void tick(long dtms) throws Throwable {
-                    final Packet packet = packetPoolModuleConnection.getModuleConnection().getNextPacket();
+                    final DatagramPacketWrapper packet = packetPoolModuleConnection.getModuleConnection().getNextPacket();
 
                     try {
-                        final DatagramPacket datagramPacket = packet.asDatagramPacket();
-                        try {
-                            socket.receive(datagramPacket);
-                        } catch (SocketTimeoutException socketTimeoutException) {
-                            logger.info("SocketTimeoutException : " + socketTimeoutException.getMessage());
-                            return;
-                        }
-                        packet.setEndPoint(new EndPoint(datagramPacket.getAddress(), datagramPacket.getPort()));
-                        packet.setPacketStatus(PacketStatus.Received);
+                        final DatagramPacket datagramPacket = packet.receive(socket);
 
                         if (listener != null) {
                             listener.process(packet);
@@ -123,8 +113,13 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
                             }
                         }
 
-                    } finally {
+                    } catch (SocketTimeoutException socketTimeoutException) {
+                        logger.info("SocketTimeoutException : " + socketTimeoutException.getMessage());
                         packet.recycle();
+
+                    } catch (Exception e) {
+                        packet.recycle();
+                        throw e;
                     }
                 }
             });
