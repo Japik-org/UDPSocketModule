@@ -1,7 +1,7 @@
 package com.pro100kryto.server.modules.udpsocket;
 
-import com.pro100kryto.server.logger.ILogger;
 import com.pro100kryto.server.module.AModuleConnection;
+import com.pro100kryto.server.module.ModuleConnectionParams;
 import com.pro100kryto.server.modules.udpsocket.connection.ISocketListener;
 import com.pro100kryto.server.modules.udpsocket.connection.IUDPSocketModuleConnection;
 import com.pro100kryto.server.utils.datagram.packet.DatagramPacketWrapper;
@@ -14,10 +14,9 @@ public class UDPSocketModuleConnection
         extends AModuleConnection<UDPSocketModule, IUDPSocketModuleConnection>
         implements IUDPSocketModuleConnection {
 
-    public UDPSocketModuleConnection(@NotNull UDPSocketModule module, ILogger logger) {
-        super(module, logger);
+    public UDPSocketModuleConnection(@NotNull UDPSocketModule module, ModuleConnectionParams params) {
+        super(module, params);
     }
-
 
     @Override
     public void setPacketListener(ISocketListener listener) {
