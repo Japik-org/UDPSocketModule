@@ -17,12 +17,12 @@
         <dependency>
             <groupId>com.pro100kryto.server</groupId>
             <artifactId>Server</artifactId>
-            <version>[0.3.0, 0.4.0)</version>
+            <version>[0.3.0, 0.5.0)</version>
         </dependency>
         <dependency>
             <groupId>com.pro100kryto.server.modules</groupId>
             <artifactId>UDPSocketModule-connection</artifactId>
-            <version>1.1.0</version>
+            <version>[1.1.0, 1.2.0)</version>
         </dependency>
         <dependency>
             <groupId>com.pro100kryto.server.utils</groupId>
