@@ -4,6 +4,7 @@ import com.pro100kryto.server.livecycle.AShortLiveCycleImpl;
 import com.pro100kryto.server.livecycle.ILiveCycleImpl;
 import com.pro100kryto.server.module.AModule;
 import com.pro100kryto.server.module.IModuleConnectionSafe;
+import com.pro100kryto.server.module.ModuleConnectionParams;
 import com.pro100kryto.server.module.ModuleParams;
 import com.pro100kryto.server.modules.packetpool.connection.IPacketPoolModuleConnection;
 import com.pro100kryto.server.modules.udpsocket.connection.ISocketListener;
@@ -40,12 +41,12 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
     }
 
     @Override
-    public @NotNull IUDPSocketModuleConnection createModuleConnection() {
-        return new UDPSocketModuleConnection(this, logger);
+    public @NotNull IUDPSocketModuleConnection createModuleConnection(ModuleConnectionParams params) {
+        return new UDPSocketModuleConnection(this, params);
     }
 
     @Override
-    protected @NotNull ILiveCycleImpl getDefaultLiveCycleImpl() {
+    protected @NotNull ILiveCycleImpl createDefaultLiveCycleImpl() {
         return new UDPSocketLiveCycleImpl(this);
     }
 
