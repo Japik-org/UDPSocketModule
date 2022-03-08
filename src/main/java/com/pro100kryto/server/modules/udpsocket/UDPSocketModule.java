@@ -1,7 +1,8 @@
 package com.pro100kryto.server.modules.udpsocket;
 
 import com.pro100kryto.server.livecycle.AShortLiveCycleImpl;
-import com.pro100kryto.server.livecycle.ILiveCycleImpl;
+import com.pro100kryto.server.livecycle.controller.ILiveCycleImplId;
+import com.pro100kryto.server.livecycle.controller.LiveCycleController;
 import com.pro100kryto.server.module.AModule;
 import com.pro100kryto.server.module.IModuleConnectionSafe;
 import com.pro100kryto.server.module.ModuleConnectionParams;
@@ -17,6 +18,8 @@ import com.pro100kryto.server.tick.ITick;
 import com.pro100kryto.server.tick.ITickGroup;
 import com.pro100kryto.server.tick.Ticks;
 import com.pro100kryto.server.utils.datagram.packet.DatagramPacketWrapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.DatagramPacket;
@@ -46,8 +49,9 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
     }
 
     @Override
-    protected @NotNull ILiveCycleImpl createDefaultLiveCycleImpl() {
-        return new UDPSocketLiveCycleImpl(this);
+    protected void initLiveCycleController(LiveCycleController liveCycleController) {
+        super.initLiveCycleController(liveCycleController);
+        liveCycleController.putImplAll(new UDPSocketModuleLiveCycleImpl(this));
     }
 
     public void setListener(ISocketListener listener) {
@@ -62,10 +66,15 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
         return socket;
     }
 
-    private final class UDPSocketLiveCycleImpl extends AShortLiveCycleImpl {
+    private final class UDPSocketModuleLiveCycleImpl extends AShortLiveCycleImpl implements ILiveCycleImplId {
+        @Getter
+        private final String name = "UDPSocketModuleLiveCycleImpl";
+        @Getter @Setter
+        private int priority = LiveCycleController.PRIORITY_NORMAL;
+
         private final UDPSocketModule module;
 
-        private UDPSocketLiveCycleImpl(UDPSocketModule module) {
+        private UDPSocketModuleLiveCycleImpl(UDPSocketModule module) {
             this.module = module;
         }
 
