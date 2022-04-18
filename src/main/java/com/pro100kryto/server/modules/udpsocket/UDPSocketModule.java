@@ -7,9 +7,9 @@ import com.pro100kryto.server.module.AModule;
 import com.pro100kryto.server.module.IModuleConnectionSafe;
 import com.pro100kryto.server.module.ModuleConnectionParams;
 import com.pro100kryto.server.module.ModuleParams;
-import com.pro100kryto.server.modules.packetpool.connection.IPacketPoolModuleConnection;
-import com.pro100kryto.server.modules.udpsocket.connection.ISocketListener;
-import com.pro100kryto.server.modules.udpsocket.connection.IUDPSocketModuleConnection;
+import com.pro100kryto.server.modules.packetpool.shared.IPacketPoolModuleConnection;
+import com.pro100kryto.server.modules.udpsocket.shared.ISocketListener;
+import com.pro100kryto.server.modules.udpsocket.shared.IUDPSocketModuleConnection;
 import com.pro100kryto.server.settings.IntegerSettingListener;
 import com.pro100kryto.server.settings.SettingListenerContainer;
 import com.pro100kryto.server.settings.SettingListenerEventMask;
@@ -17,7 +17,7 @@ import com.pro100kryto.server.tick.AModuleTickRunnable;
 import com.pro100kryto.server.tick.ITick;
 import com.pro100kryto.server.tick.ITickGroup;
 import com.pro100kryto.server.tick.Ticks;
-import com.pro100kryto.server.utils.datagram.packet.DatagramPacketWrapper;
+import com.pro100kryto.server.utils.datagram.packet.DatagramPacketRecyclable;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +31,7 @@ import java.util.concurrent.BlockingQueue;
 public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
     private IModuleConnectionSafe<IPacketPoolModuleConnection> packetPoolModuleConnection;
 
-    private BlockingQueue<DatagramPacketWrapper> packetBuffer;
+    private BlockingQueue<DatagramPacketRecyclable> packetBuffer;
 
     private DatagramSocket socket;
     private ITickGroup tickGroup;
@@ -58,7 +58,7 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
         this.listener = listener;
     }
 
-    public BlockingQueue<DatagramPacketWrapper> getPacketBuffer() {
+    public BlockingQueue<DatagramPacketRecyclable> getPacketBuffer() {
         return packetBuffer;
     }
 
@@ -110,7 +110,7 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
             tick = tickGroup.createTick(new AModuleTickRunnable<UDPSocketModule>(module, logger) {
                 @Override
                 public void tick(long dtms) throws Throwable {
-                    final DatagramPacketWrapper packet = packetPoolModuleConnection.getModuleConnection().getNextPacket();
+                    final DatagramPacketRecyclable packet = packetPoolModuleConnection.getModuleConnection().getNextPacket();
 
                     try {
                         final DatagramPacket datagramPacket = packet.receive(socket);
