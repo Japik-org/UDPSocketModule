@@ -1,22 +1,25 @@
-package com.pro100kryto.server.modules.udpsocket;
+package com.japik.modules.udpsocket;
 
-import com.pro100kryto.server.livecycle.AShortLiveCycleImpl;
-import com.pro100kryto.server.livecycle.ILiveCycleImpl;
-import com.pro100kryto.server.module.AModule;
-import com.pro100kryto.server.module.IModuleConnectionSafe;
-import com.pro100kryto.server.module.ModuleConnectionParams;
-import com.pro100kryto.server.module.ModuleParams;
-import com.pro100kryto.server.modules.packetpool.connection.IPacketPoolModuleConnection;
-import com.pro100kryto.server.modules.udpsocket.connection.ISocketListener;
-import com.pro100kryto.server.modules.udpsocket.connection.IUDPSocketModuleConnection;
-import com.pro100kryto.server.settings.IntegerSettingListener;
-import com.pro100kryto.server.settings.SettingListenerContainer;
-import com.pro100kryto.server.settings.SettingListenerEventMask;
-import com.pro100kryto.server.tick.AModuleTickRunnable;
-import com.pro100kryto.server.tick.ITick;
-import com.pro100kryto.server.tick.ITickGroup;
-import com.pro100kryto.server.tick.Ticks;
-import com.pro100kryto.server.utils.datagram.packet.DatagramPacketWrapper;
+import com.japik.livecycle.AShortLiveCycleImpl;
+import com.japik.livecycle.controller.ILiveCycleImplId;
+import com.japik.livecycle.controller.LiveCycleController;
+import com.japik.module.AModule;
+import com.japik.module.IModuleConnectionSafe;
+import com.japik.module.ModuleConnectionParams;
+import com.japik.module.ModuleParams;
+import com.japik.modules.packetpool.shared.IPacketPoolModuleConnection;
+import com.japik.modules.udpsocket.shared.ISocketListener;
+import com.japik.modules.udpsocket.shared.IUDPSocketModuleConnection;
+import com.japik.settings.IntegerSettingListener;
+import com.japik.settings.SettingListenerContainer;
+import com.japik.settings.SettingListenerEventMask;
+import com.japik.tick.AModuleTickRunnable;
+import com.japik.tick.ITick;
+import com.japik.tick.ITickGroup;
+import com.japik.tick.Ticks;
+import com.japik.utils.datagram.packet.DatagramPacketRecyclable;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.DatagramPacket;
@@ -28,7 +31,7 @@ import java.util.concurrent.BlockingQueue;
 public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
     private IModuleConnectionSafe<IPacketPoolModuleConnection> packetPoolModuleConnection;
 
-    private BlockingQueue<DatagramPacketWrapper> packetBuffer;
+    private BlockingQueue<DatagramPacketRecyclable> packetBuffer;
 
     private DatagramSocket socket;
     private ITickGroup tickGroup;
@@ -46,15 +49,16 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
     }
 
     @Override
-    protected @NotNull ILiveCycleImpl createDefaultLiveCycleImpl() {
-        return new UDPSocketLiveCycleImpl(this);
+    protected void initLiveCycleController(LiveCycleController liveCycleController) {
+        super.initLiveCycleController(liveCycleController);
+        liveCycleController.putImplAll(new UDPSocketModuleLiveCycleImpl(this));
     }
 
     public void setListener(ISocketListener listener) {
         this.listener = listener;
     }
 
-    public BlockingQueue<DatagramPacketWrapper> getPacketBuffer() {
+    public BlockingQueue<DatagramPacketRecyclable> getPacketBuffer() {
         return packetBuffer;
     }
 
@@ -62,10 +66,15 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
         return socket;
     }
 
-    private final class UDPSocketLiveCycleImpl extends AShortLiveCycleImpl {
+    private final class UDPSocketModuleLiveCycleImpl extends AShortLiveCycleImpl implements ILiveCycleImplId {
+        @Getter
+        private final String name = "UDPSocketModuleLiveCycleImpl";
+        @Getter @Setter
+        private int priority = LiveCycleController.PRIORITY_NORMAL;
+
         private final UDPSocketModule module;
 
-        private UDPSocketLiveCycleImpl(UDPSocketModule module) {
+        private UDPSocketModuleLiveCycleImpl(UDPSocketModule module) {
             this.module = module;
         }
 
@@ -101,7 +110,7 @@ public class UDPSocketModule extends AModule<IUDPSocketModuleConnection> {
             tick = tickGroup.createTick(new AModuleTickRunnable<UDPSocketModule>(module, logger) {
                 @Override
                 public void tick(long dtms) throws Throwable {
-                    final DatagramPacketWrapper packet = packetPoolModuleConnection.getModuleConnection().getNextPacket();
+                    final DatagramPacketRecyclable packet = packetPoolModuleConnection.getModuleConnection().getNextPacket();
 
                     try {
                         final DatagramPacket datagramPacket = packet.receive(socket);

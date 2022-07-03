@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+
+Name: Module-Impl
+Shared-Subtype: UDPSocket
+Subtype: UDPSocket
+Version: 2.0
+Base-Package: com.japik
+Module-Shared-Subtype: PacketPool
+
+Name: Module-Shared
+Subtype: UDPSocket
+Version: 2.0
+Base-Package: com.japik
+Lib-Shared-Jar: p1k-server-datagram-1.3.0.jar

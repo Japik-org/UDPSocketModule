@@ -1,10 +1,10 @@
-package com.pro100kryto.server.modules.udpsocket;
+package com.japik.modules.udpsocket;
 
-import com.pro100kryto.server.module.AModuleConnection;
-import com.pro100kryto.server.module.ModuleConnectionParams;
-import com.pro100kryto.server.modules.udpsocket.connection.ISocketListener;
-import com.pro100kryto.server.modules.udpsocket.connection.IUDPSocketModuleConnection;
-import com.pro100kryto.server.utils.datagram.packet.DatagramPacketWrapper;
+import com.japik.module.AModuleConnection;
+import com.japik.module.ModuleConnectionParams;
+import com.japik.modules.udpsocket.shared.ISocketListener;
+import com.japik.modules.udpsocket.shared.IUDPSocketModuleConnection;
+import com.japik.utils.datagram.packet.DatagramPacketRecyclable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +35,7 @@ public class UDPSocketModuleConnection
 
     @Override
     @Nullable
-    public DatagramPacketWrapper getNextPacket() {
+    public DatagramPacketRecyclable getNextPacket() {
         return getModule().getPacketBuffer().poll();
     }
 
@@ -47,12 +47,12 @@ public class UDPSocketModuleConnection
     }
 
     @Override
-    public void send(DatagramPacketWrapper packet) throws IOException {
+    public void send(DatagramPacketRecyclable packet) throws IOException {
         getModule().getSocket().send(packet.getDatagramPacket());
     }
 
     @Override
-    public void sendAndRecycle(DatagramPacketWrapper packet) throws IOException {
+    public void sendAndRecycle(DatagramPacketRecyclable packet) throws IOException {
         getModule().getSocket().send(packet.getDatagramPacket());
         packet.recycle();
     }
