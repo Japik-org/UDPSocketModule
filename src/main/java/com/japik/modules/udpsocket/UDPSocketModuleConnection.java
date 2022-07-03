@@ -1,10 +1,10 @@
-package com.pro100kryto.server.modules.udpsocket;
+package com.japik.modules.udpsocket;
 
-import com.pro100kryto.server.module.AModuleConnection;
-import com.pro100kryto.server.module.ModuleConnectionParams;
-import com.pro100kryto.server.modules.udpsocket.shared.ISocketListener;
-import com.pro100kryto.server.modules.udpsocket.shared.IUDPSocketModuleConnection;
-import com.pro100kryto.server.utils.datagram.packet.DatagramPacketRecyclable;
+import com.japik.module.AModuleConnection;
+import com.japik.module.ModuleConnectionParams;
+import com.japik.modules.udpsocket.shared.ISocketListener;
+import com.japik.modules.udpsocket.shared.IUDPSocketModuleConnection;
+import com.japik.utils.datagram.packet.DatagramPacketRecyclable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

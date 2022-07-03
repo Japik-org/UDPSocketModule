@@ -1,6 +1,6 @@
-package com.pro100kryto.server.modules.udpsocket.shared;
+package com.japik.modules.udpsocket.shared;
 
-import com.pro100kryto.server.utils.datagram.packet.DatagramPacketRecyclable;
+import com.japik.utils.datagram.packet.DatagramPacketRecyclable;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

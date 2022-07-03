@@ -1,7 +1,7 @@
-package com.pro100kryto.server.modules.udpsocket.shared;
+package com.japik.modules.udpsocket.shared;
 
-import com.pro100kryto.server.module.IModuleConnection;
-import com.pro100kryto.server.utils.datagram.packet.DatagramPacketRecyclable;
+import com.japik.module.IModuleConnection;
+import com.japik.utils.datagram.packet.DatagramPacketRecyclable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
